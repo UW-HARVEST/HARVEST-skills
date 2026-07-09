@@ -1,0 +1,19 @@
+{
+  "name": "harvest-skills",
+  "displayName": "HARVEST Skills — Agentic C-to-Rust Translation",
+  "description": "Two battle-tested skills for agentic C-to-Rust translation: context-window-aware translation with persistent PLAN.md planning and sub-agent delegation, and differential verification against the original C as ground truth with a persistent hypothesis log.",
+  "version": "1.0.0",
+  "author": {
+    "name": "HARVEST Developers"
+  },
+  "license": "MIT",
+  "keywords": [
+    "c-to-rust",
+    "translation",
+    "transpilation",
+    "verification",
+    "rust",
+    "c",
+    "porting"
+  ]
+}

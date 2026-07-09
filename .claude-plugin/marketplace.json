@@ -1,0 +1,14 @@
+{
+  "name": "harvest-skills",
+  "description": "Agentic C-to-Rust translation and verification skills from the UW-HARVEST/ACTOR research project",
+  "owner": {
+    "name": "HARVEST Developers"
+  },
+  "plugins": [
+    {
+      "name": "harvest-skills",
+      "source": "./",
+      "description": "Agentic C-to-Rust translation and verification skills"
+    }
+  ]
+}
