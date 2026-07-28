@@ -3,14 +3,9 @@
 Agent Skills for translating C codebases into pure Rust with byte-identical
 behavior, and for verifying the result against the original C as ground truth.
 
-These skills distill the methodology of
-[UW-HARVEST/ACTOR](https://github.com/UW-HARVEST/ACTOR) ("Agentic C-to-Rust
-translation", part of the DARPA TRACTOR program research at UW) into two
-plain-markdown skills that work with any coding agent supporting the
-[Agent Skills](https://agentskills.io) standard. They have been
-exercised on real-world libraries such as zstd, lz4, and
-SPHINCS+ reference code.
-The largest translation to date is the 80kLoC zstd.
+These skills distill the methodology of the [ACTOR](https://homes.cs.washington.edu/~mernst/pubs/c-to-rust-ieeesp2026-abstract.html) state-of-the-art C-to-Rust translator.
+It provides two skills that work with any coding agent supporting the
+[Agent Skills](https://agentskills.io) standard.
 
 ## The two skills
 
@@ -61,4 +56,4 @@ npx skills add UW-HARVEST/HARVEST-skills
 
 ## License
 
-[MIT](LICENSE) © HARVEST Developers
+[MIT License](LICENSE) © HARVEST Developers
