@@ -29,10 +29,12 @@ the context window fast. The skill therefore:
 
 Verifies and fixes a finished translation by differential testing:
 
-- Builds the original C as a shared library. It then compares the C library and
-  the Rust package function by function, byte for byte, with
-  `libloading`-based integration tests.
-- Also checks symbol parity with `nm -D`, and compares whole-binary stdout.
+- Ships a ready-to-use GoogleTest environment. It compiles the original C into
+  the test binary as the oracle and loads the translated Rust as a shared
+  library. Each test runs both sides and compares the results byte for byte.
+- Adds coverage-guided [FuzzTest](https://github.com/google/fuzztest)
+  properties over each input dimension.
+- Also checks symbol parity with `nm -D`.
 - Keeps a persistent hypothesis log (`HYPOTHESES.md`) with one entry per bug
   hypothesis: open, confirmed, refuted, or fixed. The log survives context
   compaction, so the agent does not investigate the same bug twice.

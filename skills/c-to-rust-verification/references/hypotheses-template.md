@@ -20,8 +20,7 @@ These rules govern verification. They must survive every compaction unchanged.
 
 ### Ground truth
 - The C code is the authoritative reference. Rust outputs must match C
-  byte-for-byte (binary stdout AND every public function output under
-  libloading-based comparison).
+  byte-for-byte (binary stdout AND every public function output).
 - If C and Rust diverge, fix Rust. NEVER modify C.
 
 ### Rust toolchain
@@ -44,8 +43,6 @@ These rules govern verification. They must survive every compaction unchanged.
 
 ### Boundaries
 - Do NOT modify anything in the C source directory.
-- Add `libloading = "0.8"` to `[dev-dependencies]` in `Cargo.toml` (so your
-  integration tests can dlopen the C shared library).
 
 ### Configuration coverage
 - Discover every build configuration the project supports (CMake cache

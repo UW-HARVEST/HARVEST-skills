@@ -1,10 +1,10 @@
 ---
 name: c-to-rust-verification
-description: Verifies and fixes a C-to-Rust translation by differential testing against the original C as ground truth — builds the C as a shared library, compares C and Rust outputs byte-for-byte with libloading-based tests, tracks bug hypotheses in a persistent HYPOTHESES.md that survives context compaction, and delegates fixes to sub-agents. Use after translating C code to Rust, or when asked to verify, test, debug, or fix a Rust port of a C library or program.
+description: Verifies and fixes a C-to-Rust translation by differential testing against the original C as ground truth — compiles the C into a GoogleTest binary as the oracle, loads the translated Rust as a shared library, compares outputs byte-for-byte with fixed tests and coverage-guided FuzzTest properties, tracks bug hypotheses in a persistent HYPOTHESES.md that survives context compaction, and delegates fixes to sub-agents. Use after translating C code to Rust, or when asked to verify, test, debug, or fix a Rust port of a C library or program.
 license: MIT
 metadata:
   author: HARVEST Developers
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # C-to-Rust Verification
@@ -18,17 +18,11 @@ Setup assumptions (adapt paths to the actual project):
   `c_src/`. **Never modify anything inside it.**
 - The Rust translation lives in the current working directory (`Cargo.toml`,
   `src/`).
-- The C code can be compiled as a shared library to serve as the oracle. Look
-  at its build files (e.g. `c_src/CMakeLists.txt`) to understand the build
-  system. For CMake projects:
 
-  ```
-  cd c_src && mkdir -p build && cd build && \
-  cmake .. -DCMAKE_POSITION_INDEPENDENT_CODE=ON <project-specific -D flags> && \
-  cmake --build .
-  ```
-
-  Then find the resulting `.so` files in the build output.
+The concrete mechanism you use to compare C against Rust — how you build each
+side and where you write the comparison — is described in **Step 2** below.
+Everything before it (PLAN.md, the HYPOTHESES.md discipline, the invariants)
+applies regardless of which comparison mechanism you use.
 
 ## Step 0: Read PLAN.md FIRST
 
@@ -120,36 +114,25 @@ turn looks like a summary rather than concrete work. In that case:
 
 ## Step 2: Verification workflow
 
-Now do the actual verification:
+You compare C against Rust from **inside a C++ GoogleTest binary**. A
+ready-to-use test environment ships with this skill in `assets/verify_env/` —
+copy that whole directory into the project root as `verify_env/`. The C
+reference is compiled directly into the test binary; the translated Rust is
+loaded as a shared library and called through its C-ABI exports. Every test
+input runs both sides and compares the observable result with GoogleTest
+assertions.
 
-1. Build the C code as a shared library.
-2. Write Rust integration tests (in `tests/`) that use `libloading` to load
-   the C `.so` and compare C vs Rust function outputs.
-3. Start with the lowest-level functions and work upward to higher-level ones.
-   Look at the C headers to identify the public API and call hierarchy.
-4. For each function: create fixed test inputs, call both C and Rust versions,
-   assert outputs match byte-for-byte.
-5. Run `cargo test` and investigate any mismatches. Every time a test exposes
-   a divergence, append a hypothesis to `HYPOTHESES.md`.
-6. When you find a Rust function that produces different output than C, fix
-   the Rust code in `src/` and re-run until the test passes. Update the
-   matching hypothesis to `fixed` after the Edit.
-7. Keep going until all public functions match.
-8. If the project has a main binary, run both the C binary and the Rust binary
-   with the same inputs and compare their stdout byte-for-byte. Fix any
-   differences.
-9. Compare `nm -D` on the C `.so` and the Rust `.so`. Every symbol the C `.so`
-   exports, the Rust `.so` must also export with the exact same name — this
-   includes symbols created by preprocessor macros. No exceptions. Add missing
-   exports.
+The full workflow — the environment's contents, the compile-definitions check
+on the C reference, the test-writing steps, and the FuzzTest property-fuzzing
+discipline — is in **`references/gtest-method.md`**. Read it now and follow
+it.
 
 When a divergence hinges on subtle C semantics (macro expansion, integer
 promotion, undefined-behavior-adjacent idioms), compile and run a minimal C
 snippet in a temp directory and observe the ground truth directly, instead of
 reasoning from first principles.
 
-All operational rules (libloading dev-dependency, the C-source boundary,
-per-configuration re-verification, the 600-second timeout cap) live in the
-`## Invariants` section of your `HYPOTHESES.md`. Re-read them from
-`HYPOTHESES.md` whenever you are unsure — do not work from memory of this
-document.
+All operational rules (the C-source boundary, per-configuration
+re-verification, the 600-second timeout cap) live in the `## Invariants`
+section of your `HYPOTHESES.md`. Re-read them from `HYPOTHESES.md` whenever
+you are unsure — do not work from memory of this document.
