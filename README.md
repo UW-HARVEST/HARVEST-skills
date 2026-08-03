@@ -39,9 +39,6 @@ Verifies and fixes a finished translation by differential testing:
 - Delegates code-heavy fixes to sub-agents. The main agent runs the tests,
   compares the output, and updates the hypothesis log.
 
-Run the two skills in sequence: translate, then verify. Each skill also works
-alone.
-
 ## Installation
 
 **Claude Code (as a plugin):**
@@ -60,6 +57,23 @@ npx skills add UW-HARVEST/HARVEST-skills
 **Manual (any tool that supports Agent Skills):** copy the directories under
 `skills/` into your skills directory, for example `~/.claude/skills/`,
 `.claude/skills/`, or the cross-agent `~/.agents/skills/`.
+
+## How to use
+
+To use a skill, you typically describe to your agent the task in plain words, for example
+"read the C-to-Rust translation skill and use it on this project". Most agents
+find the skill and start on their own. Some agents also accept an explicit
+call, such as `/c-to-rust-translation` in Claude Code. For that syntax, see the
+documentation of your own agent.
+
+We recommend running the two skills in sequence. Each skill also works alone.
+
+1. Put the C project in its own directory. Tell the agent where it is and where to put the Rust output.
+2. Run `c-to-rust-translation`.
+3. Run `c-to-rust-verification`.
+
+If the result is not good enough, try running the verifier again. Add a hint about where to look, for
+example, give an input that produces different output.
 
 ## License
 
